@@ -1,19 +1,8 @@
-## 博文地址
+## 参考项目
 
 <https://xugaoxiang.com/2021/06/30/yolov5-pyqt5>
 
-## 代码执行
 
-项目中使用`YOLOv5`的v5.0版本，界面文件是`project.ui`
-
-```
-pip install -r requirements.txt
-python main.py
-```
-
-启动界面
-
-![yolov5 pyqt5](data/screenshot_app.png)
 
 图片检测
 
