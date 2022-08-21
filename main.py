@@ -1,12 +1,16 @@
+import os
 import sys
+
 import cv2
-import argparse
 import random
 import torch
 import numpy as np
 import torch.backends.cudnn as cudnn
-
+import qdarkstyle
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QPixmap
 
 from utils.torch_utils import select_device
 from models.experimental import attempt_load
@@ -45,19 +49,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # 给每一个类别初始化颜色
         self.colors = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]
 
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        # MainWindow.setStyleSheet("")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        # self.centralwidget.setStyleSheet("border: 1px solid white;")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setContentsMargins(-1, -1, 0, -1)
-        self.verticalLayout.setSpacing(80)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)  # 布局的左、上、右、下到窗体边缘的距离
+        # self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
 
         # 打开图片按钮
@@ -67,14 +74,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_img.sizePolicy().hasHeightForWidth())
         self.pushButton_img.setSizePolicy(sizePolicy)
-        self.pushButton_img.setMinimumSize(QtCore.QSize(150, 100))
-        self.pushButton_img.setMaximumSize(QtCore.QSize(150, 100))
+        self.pushButton_img.setMinimumSize(QtCore.QSize(150, 40))
+        self.pushButton_img.setMaximumSize(QtCore.QSize(150, 40))
         font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(12)
         self.pushButton_img.setFont(font)
         self.pushButton_img.setObjectName("pushButton_img")
         self.verticalLayout.addWidget(self.pushButton_img, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(5)  # 增加垂直盒子内部对象间距
 
         # 打开摄像头按钮
         self.pushButton_camera = QtWidgets.QPushButton(self.centralwidget)
@@ -83,11 +91,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_camera.sizePolicy().hasHeightForWidth())
         self.pushButton_camera.setSizePolicy(sizePolicy)
-        self.pushButton_camera.setMinimumSize(QtCore.QSize(150, 100))
-        self.pushButton_camera.setMaximumSize(QtCore.QSize(150, 100))
+        self.pushButton_camera.setMinimumSize(QtCore.QSize(150, 40))
+        self.pushButton_camera.setMaximumSize(QtCore.QSize(150, 40))
         self.pushButton_camera.setFont(font)
         self.pushButton_camera.setObjectName("pushButton_camera")
         self.verticalLayout.addWidget(self.pushButton_camera, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(5)
 
         # 打开视频按钮
         self.pushButton_video = QtWidgets.QPushButton(self.centralwidget)
@@ -96,11 +105,27 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_video.sizePolicy().hasHeightForWidth())
         self.pushButton_video.setSizePolicy(sizePolicy)
-        self.pushButton_video.setMinimumSize(QtCore.QSize(150, 100))
-        self.pushButton_video.setMaximumSize(QtCore.QSize(150, 100))
+        self.pushButton_video.setMinimumSize(QtCore.QSize(150, 40))
+        self.pushButton_video.setMaximumSize(QtCore.QSize(150, 40))
         self.pushButton_video.setFont(font)
         self.pushButton_video.setObjectName("pushButton_video")
         self.verticalLayout.addWidget(self.pushButton_video, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(50)
+
+        # 显示导出文件夹按钮
+        self.pushButton_showdir = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_showdir.sizePolicy().hasHeightForWidth())
+        self.pushButton_showdir.setSizePolicy(sizePolicy)
+        self.pushButton_showdir.setMinimumSize(QtCore.QSize(150, 50))
+        self.pushButton_showdir.setMaximumSize(QtCore.QSize(150, 50))
+        self.pushButton_showdir.setFont(font)
+        self.pushButton_showdir.setObjectName("pushButton_showdir")
+        self.verticalLayout.addWidget(self.pushButton_showdir, 0, QtCore.Qt.AlignHCenter)
+
+        # 右侧图片/视频填充区域
         self.verticalLayout.setStretch(2, 1)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -109,7 +134,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.horizontalLayout.setStretch(0, 1)
         self.horizontalLayout.setStretch(1, 3)
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
+        self.label.setStyleSheet("border: 1px solid white;")  #  添加显示区域边框
 
+        # 底部美化导航条
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
@@ -128,16 +155,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_img.setText(_translate("MainWindow", "图片检测"))
         self.pushButton_camera.setText(_translate("MainWindow", "摄像头检测"))
         self.pushButton_video.setText(_translate("MainWindow", "视频检测"))
+        self.pushButton_showdir.setText(_translate("MainWindow", "打开输出文件夹"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
 
     def init_slots(self):
         self.pushButton_img.clicked.connect(self.button_image_open)
         self.pushButton_video.clicked.connect(self.button_video_open)
         self.pushButton_camera.clicked.connect(self.button_camera_open)
+        self.pushButton_showdir.clicked.connect(self.button_show_dir)
         self.timer_video.timeout.connect(self.show_video_frame)
 
     def init_logo(self):
-        pix = QtGui.QPixmap('wechat.jpg')   # 绘制初始化图片
+        pix = QtGui.QPixmap('')   # 绘制初始化图片
         self.label.setScaledContents(True)
         self.label.setPixmap(pix)
 
@@ -283,9 +312,24 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.pushButton_camera.setDisabled(False)
             self.init_logo()
 
+    def button_show_dir(self):
+        path = os.getcwd() + '\\' + 'result'
+        os.system(f"start explorer {path}")
+
+
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     ui = Ui_MainWindow()
+    # 设置窗口透明度
+    # ui.setWindowOpacity(0.93)
+    # 去除顶部边框
+    # ui.setWindowFlags(Qt.FramelessWindowHint)
+    # 设置窗口图标
+    icon = QIcon()
+    icon.addPixmap(QPixmap("./UI/icon.ico"), QIcon.Normal, QIcon.Off)
+    ui.setWindowIcon(icon)
     ui.show()
     sys.exit(app.exec_())
