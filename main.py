@@ -24,66 +24,26 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.init_slots()
         self.cap = cv2.VideoCapture()
         self.out = None
-        # self.out = cv2.VideoWriter('prediction.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0, (640, 480))
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--weights', nargs='+', type=str,
-                            default='weights/yolov5s.pt', help='model.pt path(s)')
-        # file/folder, 0 for webcam
-        parser.add_argument('--source', type=str,
-                            default='data/images', help='source')
-        parser.add_argument('--img-size', type=int,
-                            default=640, help='inference size (pixels)')
-        parser.add_argument('--conf-thres', type=float,
-                            default=0.25, help='object confidence threshold')
-        parser.add_argument('--iou-thres', type=float,
-                            default=0.45, help='IOU threshold for NMS')
-        parser.add_argument('--device', default='',
-                            help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-        parser.add_argument(
-            '--view-img', action='store_true', help='display results')
-        parser.add_argument('--save-txt', action='store_true',
-                            help='save results to *.txt')
-        parser.add_argument('--save-conf', action='store_true',
-                            help='save confidences in --save-txt labels')
-        parser.add_argument('--nosave', action='store_true',
-                            help='do not save images/videos')
-        parser.add_argument('--classes', nargs='+', type=int,
-                            help='filter by class: --class 0, or --class 0 2 3')
-        parser.add_argument(
-            '--agnostic-nms', action='store_true', help='class-agnostic NMS')
-        parser.add_argument('--augment', action='store_true',
-                            help='augmented inference')
-        parser.add_argument('--update', action='store_true',
-                            help='update all models')
-        parser.add_argument('--project', default='runs/detect',
-                            help='save results to project/name')
-        parser.add_argument('--name', default='exp',
-                            help='save results to project/name')
-        parser.add_argument('--exist-ok', action='store_true',
-                            help='existing project/name ok, do not increment')
-        self.opt = parser.parse_args()
-        print(self.opt)
-
-        source, weights, view_img, save_txt, imgsz = self.opt.source, self.opt.weights, self.opt.view_img, self.opt.save_txt, self.opt.img_size
-
-        self.device = select_device(self.opt.device)
+        self.device = select_device()
         self.half = self.device.type != 'cpu'  # half precision only supported on CUDA
 
         cudnn.benchmark = True
+        weights = 'weights/yolov5s.pt'   # 模型加载路径
+        imgsz = 640  # 预测图尺寸大小
+        self.conf_thres = 0.25  # NMS置信度
+        self.iou_thres = 0.45  # IOU阈值
 
-        # Load model
+        # 载入模型
         self.model = attempt_load(weights, map_location=self.device)
         stride = int(self.model.stride.max())
         self.imgsz = check_img_size(imgsz, s=stride)
         if self.half:
             self.model.half()  # to FP16
 
-        # Get names and colors
-        self.names = self.model.module.names if hasattr(
-            self.model, 'module') else self.model.names
-        self.colors = [[random.randint(0, 255)
-                        for _ in range(3)] for _ in self.names]
+        # 从模型中获取各类别名称
+        self.names = self.model.module.names if hasattr(self.model, 'module') else self.model.names
+        # 给每一个类别初始化颜色
+        self.colors = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -93,20 +53,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setSizeConstraint(
-            QtWidgets.QLayout.SetNoConstraint)
+        self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setContentsMargins(-1, -1, 0, -1)
         self.verticalLayout.setSpacing(80)
         self.verticalLayout.setObjectName("verticalLayout")
+
+        # 打开图片按钮
         self.pushButton_img = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_img.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_img.sizePolicy().hasHeightForWidth())
         self.pushButton_img.setSizePolicy(sizePolicy)
         self.pushButton_img.setMinimumSize(QtCore.QSize(150, 100))
         self.pushButton_img.setMaximumSize(QtCore.QSize(150, 100))
@@ -115,42 +74,33 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         font.setPointSize(12)
         self.pushButton_img.setFont(font)
         self.pushButton_img.setObjectName("pushButton_img")
-        self.verticalLayout.addWidget(
-            self.pushButton_img, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addWidget(self.pushButton_img, 0, QtCore.Qt.AlignHCenter)
+
+        # 打开摄像头按钮
         self.pushButton_camera = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_camera.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_camera.sizePolicy().hasHeightForWidth())
         self.pushButton_camera.setSizePolicy(sizePolicy)
         self.pushButton_camera.setMinimumSize(QtCore.QSize(150, 100))
         self.pushButton_camera.setMaximumSize(QtCore.QSize(150, 100))
-        font = QtGui.QFont()
-        font.setFamily("Agency FB")
-        font.setPointSize(12)
         self.pushButton_camera.setFont(font)
         self.pushButton_camera.setObjectName("pushButton_camera")
-        self.verticalLayout.addWidget(
-            self.pushButton_camera, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addWidget(self.pushButton_camera, 0, QtCore.Qt.AlignHCenter)
+
+        # 打开视频按钮
         self.pushButton_video = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_video.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_video.sizePolicy().hasHeightForWidth())
         self.pushButton_video.setSizePolicy(sizePolicy)
         self.pushButton_video.setMinimumSize(QtCore.QSize(150, 100))
         self.pushButton_video.setMaximumSize(QtCore.QSize(150, 100))
-        font = QtGui.QFont()
-        font.setFamily("Agency FB")
-        font.setPointSize(12)
         self.pushButton_video.setFont(font)
         self.pushButton_video.setObjectName("pushButton_video")
-        self.verticalLayout.addWidget(
-            self.pushButton_video, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addWidget(self.pushButton_video, 0, QtCore.Qt.AlignHCenter)
         self.verticalLayout.setStretch(2, 1)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -159,6 +109,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.horizontalLayout.setStretch(0, 1)
         self.horizontalLayout.setStretch(1, 3)
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
@@ -173,7 +124,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "PyQt5+YOLOv5示例"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "YOLOv5目标检测平台"))
         self.pushButton_img.setText(_translate("MainWindow", "图片检测"))
         self.pushButton_camera.setText(_translate("MainWindow", "摄像头检测"))
         self.pushButton_video.setText(_translate("MainWindow", "视频检测"))
@@ -186,24 +137,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.timer_video.timeout.connect(self.show_video_frame)
 
     def init_logo(self):
-        pix = QtGui.QPixmap('wechat.jpg')
+        pix = QtGui.QPixmap('wechat.jpg')   # 绘制初始化图片
         self.label.setScaledContents(True)
         self.label.setPixmap(pix)
 
     def button_image_open(self):
-        print('button_image_open')
+        print('打开图片')
         name_list = []
 
         img_name, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "打开图片", "", "*.jpg;;*.png;;All Files(*)")
         if not img_name:
             return
-
         img = cv2.imread(img_name)
         print(img_name)
         showimg = img
         with torch.no_grad():
-            img = letterbox(img, new_shape=self.opt.img_size)[0]
+            img = letterbox(img, new_shape=self.imgsz)[0]
             # Convert
             # BGR to RGB, to 3x416x416
             img = img[:, :, ::-1].transpose(2, 0, 1)
@@ -214,11 +164,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             if img.ndimension() == 3:
                 img = img.unsqueeze(0)
             # Inference
-            pred = self.model(img, augment=self.opt.augment)[0]
+            pred = self.model(img)[0]
             # Apply NMS
-            pred = non_max_suppression(pred, self.opt.conf_thres, self.opt.iou_thres, classes=self.opt.classes,
-                                       agnostic=self.opt.agnostic_nms)
-            print(pred)
+            pred = non_max_suppression(pred, self.conf_thres, self.iou_thres)
             # Process detections
             for i, det in enumerate(pred):
                 if det is not None and len(det):
@@ -228,16 +176,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
                     for *xyxy, conf, cls in reversed(det):
                         label = '%s %.2f' % (self.names[int(cls)], conf)
+                        # print(label.split()[0])  # 打印各目标名称
                         name_list.append(self.names[int(cls)])
                         plot_one_box(xyxy, showimg, label=label,
                                      color=self.colors[int(cls)], line_thickness=2)
 
-        cv2.imwrite('prediction.jpg', showimg)
+        cv2.imwrite('result/prediction.jpg', showimg)
         self.result = cv2.cvtColor(showimg, cv2.COLOR_BGR2BGRA)
-        self.result = cv2.resize(
-            self.result, (640, 480), interpolation=cv2.INTER_AREA)
-        self.QtImg = QtGui.QImage(
-            self.result.data, self.result.shape[1], self.result.shape[0], QtGui.QImage.Format_RGB32)
+        self.result = cv2.resize(self.result, (640, 480), interpolation=cv2.INTER_AREA)
+        self.QtImg = QtGui.QImage(self.result.data, self.result.shape[1], self.result.shape[0], QtGui.QImage.Format_RGB32)
         self.label.setPixmap(QtGui.QPixmap.fromImage(self.QtImg))
 
     def button_video_open(self):
@@ -252,7 +199,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(
                 self, u"Warning", u"打开视频失败", buttons=QtWidgets.QMessageBox.Ok, defaultButton=QtWidgets.QMessageBox.Ok)
         else:
-            self.out = cv2.VideoWriter('prediction.avi', cv2.VideoWriter_fourcc(
+            self.out = cv2.VideoWriter('result/vedio_prediction.avi', cv2.VideoWriter_fourcc(
                 *'MJPG'), 20, (int(self.cap.get(3)), int(self.cap.get(4))))
             self.timer_video.start(30)
             self.pushButton_video.setDisabled(True)
@@ -267,7 +214,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QMessageBox.warning(
                     self, u"Warning", u"打开摄像头失败", buttons=QtWidgets.QMessageBox.Ok, defaultButton=QtWidgets.QMessageBox.Ok)
             else:
-                self.out = cv2.VideoWriter('prediction.avi', cv2.VideoWriter_fourcc(
+                self.out = cv2.VideoWriter('result/camera_prediction.avi', cv2.VideoWriter_fourcc(
                     *'MJPG'), 20, (int(self.cap.get(3)), int(self.cap.get(4))))
                 self.timer_video.start(30)
                 self.pushButton_video.setDisabled(True)
@@ -290,7 +237,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         if img is not None:
             showimg = img
             with torch.no_grad():
-                img = letterbox(img, new_shape=self.opt.img_size)[0]
+                img = letterbox(img, new_shape=self.imgsz)[0]
                 # Convert
                 # BGR to RGB, to 3x416x416
                 img = img[:, :, ::-1].transpose(2, 0, 1)
@@ -301,11 +248,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 if img.ndimension() == 3:
                     img = img.unsqueeze(0)
                 # Inference
-                pred = self.model(img, augment=self.opt.augment)[0]
+                pred = self.model(img)[0]
 
                 # Apply NMS
-                pred = non_max_suppression(pred, self.opt.conf_thres, self.opt.iou_thres, classes=self.opt.classes,
-                                           agnostic=self.opt.agnostic_nms)
+                pred = non_max_suppression(pred, self.conf_thres, self.iou_thres)
                 # Process detections
                 for i, det in enumerate(pred):  # detections per image
                     if det is not None and len(det):
@@ -316,7 +262,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         for *xyxy, conf, cls in reversed(det):
                             label = '%s %.2f' % (self.names[int(cls)], conf)
                             name_list.append(self.names[int(cls)])
-                            print(label)
+                            # print(label)  # 打印各目标+置信度
                             plot_one_box(
                                 xyxy, showimg, label=label, color=self.colors[int(cls)], line_thickness=2)
 

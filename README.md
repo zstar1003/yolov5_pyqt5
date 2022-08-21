@@ -4,17 +4,7 @@
 
 
 
-图片检测
-
-![yolov5 pyqt5](data/screenshot_img.png)
-
-视频检测
-
-![yolov5 pyqt5](data/screenshot_video.gif)
-
-摄像头检测
-
-![yolov5 pyqt5](data/screenshot_camera.gif)
+支持图片检测、视频检测、摄像头检测
 
 图片处理后，预测结果保存在`prediction.jpg`
 
@@ -22,4 +12,4 @@
 
 ## exe打包
 
-参考我的博文 <https://xugaoxiang.com/2021/10/13/yolov5-to-exe/>
+参考博文 <https://xugaoxiang.com/2021/10/13/yolov5-to-exe/>
