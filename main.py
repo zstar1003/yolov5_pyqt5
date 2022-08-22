@@ -1,6 +1,5 @@
 import os
 import sys
-
 import cv2
 import random
 import torch
@@ -8,8 +7,6 @@ import numpy as np
 import torch.backends.cudnn as cudnn
 import qdarkstyle
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
 from utils.torch_utils import select_device
@@ -28,7 +25,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.init_slots()
         self.cap = cv2.VideoCapture()
         self.out = None
-        self.device = select_device()
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.half = self.device.type != 'cpu'  # half precision only supported on CUDA
 
         cudnn.benchmark = True
@@ -52,7 +49,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(900, 600)
         # MainWindow.setStyleSheet("")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
