@@ -8,6 +8,6 @@
 
 支持图片检测、视频检测、摄像头检测
 
-## exe打包
+博文详解：
 
-参考博文 <https://xugaoxiang.com/2021/10/13/yolov5-to-exe/>
+https://zstar.blog.csdn.net/article/details/126463741
