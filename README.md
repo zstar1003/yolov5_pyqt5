@@ -6,7 +6,7 @@
 
 主要功能：加载单图/选择模型/目标检测
 
-YOLOv5版本为最新版本(6.0+)，5.0版本可查看仓库Releases
+YOLOv5版本为最新版本(6.0+)，5.0版本可查看[Tags](https://github.com/zstar1003/yolov5_pyqt5/tree/yolov5-5.0)
 
 项目界面：
 
