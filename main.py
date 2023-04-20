@@ -18,6 +18,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # 初始化属性
         self.file_path = None
         self.model_path = None
+        self.result_path = "result"
 
 
     def setupUi(self, MainWindow):
@@ -146,6 +147,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         pixmap = pixmap.scaled(self.label.size(), Qt.IgnoreAspectRatio)
         self.label.setPixmap(pixmap)
         self.pushButton_img.setText(self.file_path.split('/')[-1])
+        # 清空result文件夹内容
+        for i in os.listdir(self.result_path):
+            file_data = self.result_path + "/" + i
+            os.remove(file_data)
 
     # 选择模型
     def select_model(self):
