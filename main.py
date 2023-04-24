@@ -7,6 +7,8 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMessageBox
 
+import detect_video
+
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -78,6 +80,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_detect.setFont(font)
         self.pushButton_detect.setObjectName("pushButton_detect")
         self.verticalLayout.addWidget(self.pushButton_detect, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(5)
+
+        # 视频检测按钮
+        self.pushButton_video_detect = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_video_detect.sizePolicy().hasHeightForWidth())
+        self.pushButton_video_detect.setSizePolicy(sizePolicy)
+        self.pushButton_video_detect.setMinimumSize(QtCore.QSize(150, 40))
+        self.pushButton_video_detect.setMaximumSize(QtCore.QSize(150, 40))
+        self.pushButton_video_detect.setFont(font)
+        self.pushButton_video_detect.setObjectName("pushButton_video_detect")
+        self.verticalLayout.addWidget(self.pushButton_video_detect, 0, QtCore.Qt.AlignHCenter)
         self.verticalLayout.addStretch(50)
 
         # 显示导出文件夹按钮
@@ -123,6 +139,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_img.setText(_translate("MainWindow", "选择图片"))
         self.pushButton_model.setText(_translate("MainWindow", "选择模型"))
         self.pushButton_detect.setText(_translate("MainWindow", "目标检测"))
+        self.pushButton_video_detect.setText(_translate("MainWindow", "视频检测"))
         self.pushButton_showdir.setText(_translate("MainWindow", "打开输出文件夹"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
 
@@ -131,6 +148,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_model.clicked.connect(self.select_model)
         self.pushButton_detect.clicked.connect(self.target_detect)
         self.pushButton_showdir.clicked.connect(self.show_dir)
+        self.pushButton_video_detect.clicked.connect(self.video_detect)
 
     def init_logo(self):
         pix = QtGui.QPixmap('')  # 绘制初始化图片
@@ -197,6 +215,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         path = os.getcwd() + '/' + 'result'
         os.system(f"start explorer {path}")
 
+    # 检测视频
+    def video_detect(self):
+        print('打开视频')
+        # print(self.label.size())  # (657, 554)
+        video_path, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self, "打开视频", "video", "All Files(*)")
+        self.Video_thread = VideoDetectionThread(self.label, video_path)
+        self.Video_thread.start()
+
 
 # DetectionThread子线程用来执行目标检测
 class DetectionThread(QThread):
@@ -215,6 +242,20 @@ class DetectionThread(QThread):
         detect.run(source=self.file_path, weights=self.model_path[0],
                    imgsz=(self.detect_size, self.detect_size))
         self.signal_done.emit(1)  # 发送结束信号
+
+
+# DetectionThread子线程用来执行目标检测
+class VideoDetectionThread(QThread):
+    signal_done = pyqtSignal(int)  # 是否结束信号
+
+    def __init__(self, label, video_path):
+        super(VideoDetectionThread, self).__init__()
+        self.label = label
+        self.video_path = video_path
+
+    def run(self):
+        # 目标检测
+        detect_video.run(weights='weights/best.pt', source=self.video_path, show_label=self.label)
 
 
 if __name__ == '__main__':
