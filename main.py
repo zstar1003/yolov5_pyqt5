@@ -17,10 +17,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.setupUi(self)
         self.init_logo()  # 初始化logo
         self.init_slots()  # 初始化槽函数
-        # 初始化属性
-        self.file_path = None
-        self.model_path = None
-        self.result_path = "result"
+        self.file_path = None   # 数据路径
+        self.model_path = None  # 模型路径
+        self.result_path = "result"  # 检测图片保存路径
+        self.init_file()  # 初始化必要的文件夹
 
 
     def setupUi(self, MainWindow):
@@ -143,6 +143,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_showdir.setText(_translate("MainWindow", "打开输出文件夹"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
 
+    # 初始化槽函数
     def init_slots(self):
         self.pushButton_img.clicked.connect(self.load_img)
         self.pushButton_model.clicked.connect(self.select_model)
@@ -150,11 +151,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_showdir.clicked.connect(self.show_dir)
         self.pushButton_video_detect.clicked.connect(self.video_detect)
 
+    # 绘制LOGO
     def init_logo(self):
-        pix = QtGui.QPixmap('')  # 绘制初始化图片
+        pix = QtGui.QPixmap('')
         self.label.setScaledContents(True)
         self.label.setPixmap(pix)
 
+    # 初始化创建保存文件夹
+    def init_file(self):
+        if not os.path.exists(self.result_path):
+            os.mkdir(self.result_path)
+
+    # 加载图片
     def load_img(self):
         print('打开图片')
         img_path, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -191,10 +199,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     # 目标检测之前检查是否选择了数据和模型
     def check_file(self):
-        if self.file_path is None:
+        if self.file_path is None or self.file_path == "":
             QMessageBox.information(self, '提示', '请先导入数据')
             return False
-        if self.model_path is None:
+        if self.model_path is None or self.model_path[0] == "":
             QMessageBox.information(self, '提示', '请先选择模型')
             return False
         return True
@@ -217,7 +225,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     # 检测视频
     def video_detect(self):
-        print('打开视频')
         # print(self.label.size())  # (657, 554)
         video_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "打开视频", "video", "All Files(*)")

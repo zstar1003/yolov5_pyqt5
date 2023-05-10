@@ -4,22 +4,33 @@
 
 项目采用了极简设计，以便读者可以基于此界面进行二次开发。
 
-主要功能：加载单图/选择模型/目标检测
-
-YOLOv5版本为最新版本(6.0+)，5.0版本可查看[Tags](https://github.com/zstar1003/yolov5_pyqt5/tree/yolov5-5.0)
+主要功能：加载单图/选择模型/图像检测/视频检测
 
 项目界面：
 
-![image-20220821211811729](show.png)
+![image-20220821211811729](Assets/show.png)
 
 # 使用方式
-在使用本项目之前，建议先配置好最新版本的YOLOv5的环境并跑通
+1.安装Cuda、Cudnn
 
-之后在相同环境中安装pyqt5、qdarkstyle等依赖
+根据自己设备GPU型号选择合适版本进行安装。
 
-最后运行main.py即可看到显示界面
+2.安装torch、torchvision
+
+- torch版本：1.7.1
+- torchvision版本：0.8.2
+
+在[此处](https://download.pytorch.org/whl/torch_stable.html)根据Cuda版本选择合适的文件下载安装
+
+3.安装剩余模块其它依赖
+
+```
+pip install -r requriements.txt
+```
+
+4.运行main.py即可看到显示界面
  
-## Stars over time
+## Star History
 
 如果此项目对你有所帮助，请给项目点个star
 
