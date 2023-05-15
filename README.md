@@ -35,6 +35,11 @@ pip install -r requriements.txt
 
 4.运行main.py即可看到显示界面
 
+
+# 打包版本
+应某些读者的需求，打了个包，有需要的可自行下载(仅支持windows)：[百度云盘](https://pan.baidu.com/s/1egD-K_lDKQn-RdnhIk_iXg?pwd=8888)
+
+
 ## Contact
 
 本项目不会再添加新功能，如果你发现bug，欢迎在issue中提出，我会及时修复
