@@ -44,7 +44,7 @@ pip install -r requriements.txt
 
 本项目不会再添加新功能，如果你发现bug，欢迎在issue中提出，我会及时修复
 
-如果你需要其它定制功能，可以发送“需求+工期+报价”等详细信息至我的邮箱zstar1003@163.com
+如果你需要其它定制功能，可以加我vx：zstar1003
  
  
 ## Star History
