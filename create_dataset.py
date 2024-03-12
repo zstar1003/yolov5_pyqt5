@@ -15,8 +15,6 @@ class MSRSData(torch.utils.data.Dataset):
     """
     Load dataset with infrared folder path and visible folder path
     """
-
-    # TODO: remove ground truth reference
     def __init__(self, opts, is_train=True, crop=lambda x: x):
         super(MSRSData, self).__init__()
         self.is_train = is_train
