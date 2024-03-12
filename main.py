@@ -9,8 +9,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMessageBox
-
 import detect
+import test_Fusion
 from utils.myutil import file_is_pic, Globals
 
 
@@ -197,7 +197,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         for radioButton in self.radioButtons:
             radioButton.toggled.connect(self.update_image_display)
 
-
     # 绘制LOGO
     def init_logo(self):
         pix = QtGui.QPixmap('')
@@ -306,6 +305,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def merge_enable(self):
         self.radioButtons[2].setEnabled(True)
+        test_Fusion.main()
 
 
     def target_detect(self):
@@ -350,13 +350,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 # DetectionThread子线程用来执行导入资源的目标检测
 class DetectionThread(QThread):
     signal_done = pyqtSignal(int)  # 是否结束信号
-
     def __init__(self, file_path, model_path, label):
         super(DetectionThread, self).__init__()
         self.file_path = file_path
         self.model_path = model_path
         self.label = label
-
     def run(self):
         detect.run(source=self.file_path, weights=self.model_path[0], show_label=self.label, save_img=True)
         self.signal_done.emit(1)  # 发送结束信号
@@ -367,9 +365,7 @@ if __name__ == '__main__':
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     ui = Ui_MainWindow()
     # 设置窗口透明度
-    # ui.setWindowOpacity(0.93)
-    # 去除顶部边框
-    # ui.setWindowFlags(Qt.FramelessWindowHint)
+    ui.setWindowOpacity(0.93)
     # 设置窗口图标
     icon = QIcon()
     icon.addPixmap(QPixmap("./UI/icon.ico"), QIcon.Normal, QIcon.Off)
