@@ -147,6 +147,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # 将切换按钮区域的布局添加到verticalLayout中
         self.verticalLayout.addLayout(self.toggleButtonLayout)
         self.verticalLayout.addStretch(5)
+
+        # 创建按钮水平布局
+        self.buttonHorizontalLayout = QtWidgets.QHBoxLayout()
+        # 设置水平布局的内边距
+        self.buttonHorizontalLayout.setContentsMargins(35, 0, 35, 0)  # 左上右下
+        # 设置布局中元素之间的间距
+        self.buttonHorizontalLayout.setSpacing(0)  # 设置按钮之间的间距
         # 显示上一张按钮
         self.pushButton_up = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -154,11 +161,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_up.sizePolicy().hasHeightForWidth())
         self.pushButton_up.setSizePolicy(sizePolicy)
-        self.pushButton_up.setMinimumSize(QtCore.QSize(250, 80))
-        self.pushButton_up.setMaximumSize(QtCore.QSize(250, 80))
+        self.pushButton_up.setMinimumSize(QtCore.QSize(125, 80))
+        self.pushButton_up.setMaximumSize(QtCore.QSize(125, 80))
         self.pushButton_up.setFont(font)
-        self.verticalLayout.addWidget(self.pushButton_up, 0, QtCore.Qt.AlignHCenter)
-        self.verticalLayout.addStretch(1)
+        # self.buttonHorizontalLayout.addWidget(self.pushButton_up, 0, QtCore.Qt.AlignHCenter)
+        self.buttonHorizontalLayout.addWidget(self.pushButton_up)
         # 显示下一张按钮
         self.pushButton_down = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -166,11 +173,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_down.sizePolicy().hasHeightForWidth())
         self.pushButton_down.setSizePolicy(sizePolicy)
-        self.pushButton_down.setMinimumSize(QtCore.QSize(250, 80))
-        self.pushButton_down.setMaximumSize(QtCore.QSize(250, 80))
+        self.pushButton_down.setMinimumSize(QtCore.QSize(125, 80))
+        self.pushButton_down.setMaximumSize(QtCore.QSize(125, 80))
         self.pushButton_down.setFont(font)
-        self.verticalLayout.addWidget(self.pushButton_down, 0, QtCore.Qt.AlignHCenter)
-        self.verticalLayout.addStretch(1)
+        self.buttonHorizontalLayout.addWidget(self.pushButton_down)
+        self.verticalLayout.addLayout(self.buttonHorizontalLayout)
+
         # 显示导出文件夹按钮
         self.pushButton_showdir = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -216,8 +224,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_model.setText(_translate("MainWindow", "选择模型"))
         self.pushButton_merge.setText(_translate("MainWindow", "图像融合"))
         self.pushButton_detect.setText(_translate("MainWindow", "目标检测"))
-        self.pushButton_up.setText(_translate("MainWindow", "上一张图片"))
-        self.pushButton_down.setText(_translate("MainWindow", "下一张图片"))
+        self.pushButton_up.setText(_translate("MainWindow", "上一张"))
+        self.pushButton_down.setText(_translate("MainWindow", "下一张"))
         self.pushButton_showdir.setText(_translate("MainWindow", "打开输出文件夹"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
 
