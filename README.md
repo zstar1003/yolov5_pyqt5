@@ -1,1 +1,3 @@
 该分支为用户定制化需求
+
+使用时需要将融合模型放置在results/PSFusion/checkpoints目录下

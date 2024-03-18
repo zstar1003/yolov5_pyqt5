@@ -1,9 +1,6 @@
 import os
 import sys
-
 import cv2
-
-import detect
 import qdarkstyle
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
@@ -60,6 +57,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.verticalLayout.addWidget(self.pushButton_img, 0, QtCore.Qt.AlignHCenter)
         self.verticalLayout.addStretch(1)  # 增加垂直盒子内部对象间距
 
+        # 导入图片按钮2
+        self.pushButton_img2 = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_img2.sizePolicy().hasHeightForWidth())
+        self.pushButton_img2.setSizePolicy(sizePolicy)
+        self.pushButton_img2.setMinimumSize(QtCore.QSize(250, 80))
+        self.pushButton_img2.setMaximumSize(QtCore.QSize(250, 80))
+        self.pushButton_img2.setFont(font)
+        self.pushButton_img2.setObjectName("pushButton_img2")
+        self.verticalLayout.addWidget(self.pushButton_img2, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(1)  # 增加垂直盒子内部对象间距
+
         # 加载模型按钮
         self.pushButton_model = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -100,7 +111,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_detect.setFont(font)
         self.pushButton_detect.setObjectName("pushButton_detect")
         self.verticalLayout.addWidget(self.pushButton_detect, 0, QtCore.Qt.AlignHCenter)
-        self.verticalLayout.addStretch(1)
 
         # 切换按钮区域的布局
         self.toggleButtonLayout = QtWidgets.QGridLayout()
@@ -136,7 +146,31 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.toggleButtonLayout.setRowStretch(len(button_texts) + 1, 1)  # 在最后一行之后添加一个拉伸因子
         # 将切换按钮区域的布局添加到verticalLayout中
         self.verticalLayout.addLayout(self.toggleButtonLayout)
-        self.verticalLayout.addStretch(10)
+        self.verticalLayout.addStretch(5)
+        # 显示上一张按钮
+        self.pushButton_up = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_up.sizePolicy().hasHeightForWidth())
+        self.pushButton_up.setSizePolicy(sizePolicy)
+        self.pushButton_up.setMinimumSize(QtCore.QSize(250, 80))
+        self.pushButton_up.setMaximumSize(QtCore.QSize(250, 80))
+        self.pushButton_up.setFont(font)
+        self.verticalLayout.addWidget(self.pushButton_up, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(1)
+        # 显示下一张按钮
+        self.pushButton_down = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_down.sizePolicy().hasHeightForWidth())
+        self.pushButton_down.setSizePolicy(sizePolicy)
+        self.pushButton_down.setMinimumSize(QtCore.QSize(250, 80))
+        self.pushButton_down.setMaximumSize(QtCore.QSize(250, 80))
+        self.pushButton_down.setFont(font)
+        self.verticalLayout.addWidget(self.pushButton_down, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout.addStretch(1)
         # 显示导出文件夹按钮
         self.pushButton_showdir = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -149,7 +183,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pushButton_showdir.setFont(font)
         self.pushButton_showdir.setObjectName("pushButton_showdir")
         self.verticalLayout.addWidget(self.pushButton_showdir, 0, QtCore.Qt.AlignHCenter)
-
         # 右侧图片填充区域
         self.verticalLayout.setStretch(2, 1)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -163,7 +196,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.label.setScaledContents(True)
         self.label.setMinimumSize(QSize(1571, 963))
         self.label.setMaximumSize(QSize(1571, 963))
-
         # 底部美化导航条
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -179,16 +211,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "RayNet图像融合检测系统"))
-        self.pushButton_img.setText(_translate("MainWindow", "加载数据"))
+        self.pushButton_img.setText(_translate("MainWindow", "加载可见光图像"))
+        self.pushButton_img2.setText(_translate("MainWindow", "加载红外图像"))
         self.pushButton_model.setText(_translate("MainWindow", "选择模型"))
         self.pushButton_merge.setText(_translate("MainWindow", "图像融合"))
         self.pushButton_detect.setText(_translate("MainWindow", "目标检测"))
+        self.pushButton_up.setText(_translate("MainWindow", "上一张图片"))
+        self.pushButton_down.setText(_translate("MainWindow", "下一张图片"))
         self.pushButton_showdir.setText(_translate("MainWindow", "打开输出文件夹"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
 
     # 初始化槽函数
     def init_slots(self):
         self.pushButton_img.clicked.connect(self.load_source)
+        self.pushButton_img2.clicked.connect(self.load_source)
         self.pushButton_model.clicked.connect(self.select_model)
         self.pushButton_detect.clicked.connect(self.target_detect)
         self.pushButton_showdir.clicked.connect(self.show_dir)
@@ -305,13 +341,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def merge_enable(self):
         self.radioButtons[2].setEnabled(True)
-        test_Fusion.main()
+        self.thread = MergeThread()
+        self.thread.start()
 
 
     def target_detect(self):
         for i in range(3, 6):
             self.radioButtons[i].setEnabled(True)
-
 
     # 目标检测之前检查是否选择了数据和模型
     def check_file(self):
@@ -359,8 +395,22 @@ class DetectionThread(QThread):
         detect.run(source=self.file_path, weights=self.model_path[0], show_label=self.label, save_img=True)
         self.signal_done.emit(1)  # 发送结束信号
 
+# MergeThread子线程用来执行导入资源的融合
+class MergeThread(QThread):
+    signal_done = pyqtSignal(int)  # 是否结束信号
+    def __init__(self):
+        super(MergeThread, self).__init__()
+
+    def run(self):
+        test_Fusion.main()
+        self.signal_done.emit(1)  # 发送结束信号
+
+
 
 if __name__ == '__main__':
+    QtWidgets.QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     ui = Ui_MainWindow()
